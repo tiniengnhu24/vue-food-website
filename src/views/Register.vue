@@ -31,28 +31,22 @@
   </div>
 </template>
 
-<script>
+<script setup>
+import { ref } from 'vue'
 import { supabase } from '../supabase'
 
-export default {
-  data() {
-    return {
-      email: '',
-      password: ''
-    }
-  },
-  methods: {
-    async register() {
-      const { error } = await supabase.auth.signUp({
-        email: this.email,
-        password: this.password
-      })
-      if (error) {
-        alert(error.message)
-      } else {
-        alert('Đăng ký thành công! Vui lòng kiểm tra email để xác nhận tài khoản.')
-      }
-    }
+const email = ref('')
+const password = ref('')
+
+const register = async () => {
+  const { error } = await supabase.auth.signUp({
+    email: email.value,
+    password: password.value
+  })
+  if (error) {
+    alert(error.message)
+  } else {
+    alert('Đăng ký thành công! Vui lòng kiểm tra email để xác nhận tài khoản.')
   }
 }
 </script>

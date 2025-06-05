@@ -74,34 +74,31 @@
   </nav>
 </template>
 
-<script>
+<script setup>
 import { ref, onMounted } from 'vue'
+import { useRouter } from 'vue-router'
 import { supabase } from '@/supabase'
 
-export default {
-  name: 'AppNavbar',
-  setup() {
-    const user = ref(null)
+// Khởi tạo router để điều hướng nếu cần
+const router = useRouter()
 
-    // Lấy user khi component mounted
-    onMounted(async () => {
-      const { data } = await supabase.auth.getUser()
-      user.value = data.user
-    })
+// Reactive user object
+const user = ref(null)
 
-    const logout = async () => {
-      await supabase.auth.signOut()
-      user.value = null
-      window.location.href = '/'
-    }
+// Khi component mount, lấy user từ Supabase
+onMounted(async () => {
+  const { data } = await supabase.auth.getUser()
+  user.value = data.user
+})
 
-    return {
-      user,
-      logout
-    }
-  }
+// Hàm đăng xuất
+const logout = async () => {
+  await supabase.auth.signOut()
+  user.value = null
+  router.push('/') // dùng router thay vì window.location.href
 }
 </script>
+
 
 <style scoped>
 .navbar .badge {

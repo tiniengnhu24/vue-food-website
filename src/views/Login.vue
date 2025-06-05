@@ -31,31 +31,32 @@
   </div>
 </template>
 
-<script>
+<script setup>
+import { ref } from 'vue'
+import { useRouter } from 'vue-router'
 import { supabase } from '../supabase'
 
-export default {
-  data() {
-    return {
-      email: '',
-      password: ''
-    }
-  },
-  methods: {
-    async login() {
-      const { error } = await supabase.auth.signInWithPassword({
-        email: this.email,
-        password: this.password
-      })
-      if (error) {
-        alert(error.message)
-      } else {
-        this.$router.push('/')
-      }
-    }
+// Biến reactive cho email và password
+const email = ref('')
+const password = ref('')
+
+// Router để điều hướng sau khi đăng nhập
+const router = useRouter()
+
+// Hàm đăng nhập
+const login = async () => {
+  const { error } = await supabase.auth.signInWithPassword({
+    email: email.value,
+    password: password.value
+  })
+  if (error) {
+    alert(error.message)
+  } else {
+    router.push('/')
   }
 }
 </script>
+
 
 <style scoped>
 body {
