@@ -3,8 +3,7 @@
   <div id="app" class="container">
     <AppNavbar />
 
-    <!-- Kiểm tra xem người dùng có ở trang đăng nhập hoặc đăng ký không -->
-    <FoodCategories v-if="!isAuthPage" />
+
     
     <router-view></router-view> 
   </div>
