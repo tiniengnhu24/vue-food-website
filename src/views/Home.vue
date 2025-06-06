@@ -1,24 +1,5 @@
 //views/Home.vue
 <template>
-  <div>
-    <!-- Tiêu đề trang trọng -->
-<div class="top-banner py-2 px-3 text-center">
-  <div class="d-flex justify-content-between align-items-start">
-    <div class="text-start">
-      <div><strong>ỦY BAN NHÂN DÂN QUẬN 10</strong></div>
-      <div><em>SỞ GIÁO DỤC VÀ ĐÀO TẠO</em></div>
-    </div>
-
-    <div class="text-center w-50">
-      <div class="project-title"><strong>ĐỒ ÁN ẨM THỰC BA MIỀN</strong></div>
-    </div>
-
-    <div class="text-end">
-      <div><strong>TRƯỜNG CAO ĐẲNG KINH TẾ HCE</strong></div>
-      <div><em>GVHD: Phạm Đằng Phương</em></div>
-    </div>
-  </div>
-</div>
 
     <!-- Header -->
     <div id="header"></div>
