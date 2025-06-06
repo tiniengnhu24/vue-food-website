@@ -1,5 +1,7 @@
 //views/Home.vue
 <template>
+<div>
+  
 
     <!-- Header -->
     <div id="header"></div>
