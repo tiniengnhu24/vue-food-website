@@ -1,13 +1,16 @@
 <template>
-  <div id="app" class="container">
-    <!-- Top Banner hiển thị trên cùng -->
+  <div id="app">
+    <!-- Top Banner full-width -->
     <TopBanner />
 
-    <!-- Thanh chức năng (Navbar) -->
-    <AppNavbar />
+    <!-- Nội dung bên trong container -->
+    <div class="container py-3">
+      <!-- Thanh chức năng (Navbar) -->
+      <AppNavbar />
 
-    <!-- Nội dung trang -->
-    <router-view></router-view>
+      <!-- Nội dung trang -->
+      <router-view></router-view>
+    </div>
   </div>
 </template>
 
@@ -33,8 +36,14 @@ export default {
 body {
   font-family: Arial, sans-serif;
   background-color: #fff;
-  color: #c00;
+  color: #333;
   margin: 0;
   padding: 0;
+}
+
+#app {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
 }
 </style>
