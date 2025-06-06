@@ -3,9 +3,9 @@
     <div class="d-flex justify-content-between align-items-center flex-wrap">
       <!-- Bên trái -->
       <div class="text-start banner-left">
-        <div><strong>ỦY BAN NHÂN DÂN QUẬN 10</strong></div>
+        <div><strong>ỦY BAN NHÂN DÂN THÀNH PHỐ HỒ CHÍ MINH</strong></div>
         <div><strong>SỞ GIÁO DỤC VÀ ĐÀO TẠO</strong></div>
-        <div><strong>TRƯỜNG CAO ĐẲNG KINH TẾ HCE</strong></div>
+        <div><strong>TRƯỜNG CAO ĐẲNG KINH TẾ THÀNH PHỐ HỒ CHÍ MINH</strong></div>
         <div class="mt-2"><em>Đồ Án Thiết Kế Web Nâng Cao</em></div>
       </div>
 
@@ -19,7 +19,7 @@
       <!-- Bên phải -->
       <div class="text-end banner-right">
         <div><strong>GIẢNG VIÊN HƯỚNG DẪN</strong></div>
-        <div><em>Phạm Đằng Phương</em></div>
+        <div><em>Th.SPhạm Đằng Phương</em></div>
         <div class="mt-2"><strong>SINH VIÊN THỰC HIỆN</strong></div>
         <div><em>Cao Thị Ngọc Như<br>Phan Nguyễn Anh Phương<br>Nguyễn Thị Bảo Trâm</em></div>
       </div>
