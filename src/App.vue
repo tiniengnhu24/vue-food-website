@@ -1,26 +1,27 @@
-//App.vue
 <template>
   <div id="app" class="container">
+    <!-- Top Banner hiển thị trên cùng -->
+    <TopBanner />
+
+    <!-- Thanh chức năng (Navbar) -->
     <AppNavbar />
 
-
-    
-    <router-view></router-view> 
+    <!-- Nội dung trang -->
+    <router-view></router-view>
   </div>
 </template>
 
 <script>
 import AppNavbar from './components/Navbar.vue';
-
+import TopBanner from './components/TopBanner.vue';
 
 export default {
   name: 'App',
   components: {
     AppNavbar,
-   
+    TopBanner
   },
   computed: {
-    // Kiểm tra nếu đường dẫn là '/login' hoặc '/register'
     isAuthPage() {
       return this.$route.path === '/login' || this.$route.path === '/register';
     }
@@ -29,7 +30,6 @@ export default {
 </script>
 
 <style>
-/* Tùy chỉnh thêm nếu cần */
 body {
   font-family: Arial, sans-serif;
   background-color: #fff;
