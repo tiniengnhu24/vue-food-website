@@ -2,6 +2,11 @@
   <div class="container mt-4">
     <h2 class="mb-4">Danh sách món ăn</h2>
 
+    <!-- Nếu chưa đăng nhập thì hiện thông báo -->
+    <div v-if="!user" class="alert alert-warning">
+      Vui lòng <router-link to="/login">đăng nhập</router-link> để thêm, sửa hoặc xóa món ăn.
+    </div>
+
     <!-- Bộ lọc -->
     <div class="mb-3">
       <label for="regionFilter" class="form-label">Lọc theo miền</label>
@@ -13,12 +18,21 @@
       </select>
     </div>
 
-    <!-- Form thêm món ăn -->
-    <div class="card mb-4">
+    <!-- Form thêm món ăn (chỉ hiện nếu đã đăng nhập) -->
+    <div v-if="user" class="card mb-4">
       <div class="card-body">
         <h5 class="card-title">Thêm món ăn mới</h5>
-        <input type="text" v-model="newProduct.name" class="form-control mb-2" placeholder="Tên món ăn" />
-        <textarea v-model="newProduct.description" class="form-control mb-2" placeholder="Cách làm..."></textarea>
+        <input
+          type="text"
+          v-model="newProduct.name"
+          class="form-control mb-2"
+          placeholder="Tên món ăn"
+        />
+        <textarea
+          v-model="newProduct.description"
+          class="form-control mb-2"
+          placeholder="Cách làm..."
+        ></textarea>
         <select v-model="newProduct.region" class="form-select mb-2">
           <option disabled value="">Chọn miền</option>
           <option>Bắc</option>
@@ -27,10 +41,10 @@
         </select>
         <input type="file" @change="handleFileChange" class="form-control mb-2" />
 
-        <!-- Xem trước ảnh -->
+        <!-- Ảnh xem trước nhỏ gọn -->
         <div v-if="previewUrl" class="mb-2">
           <p>Ảnh xem trước:</p>
-          <img :src="previewUrl" class="img-thumbnail" style="max-height: 200px;" />
+          <img :src="previewUrl" class="preview-img" />
         </div>
 
         <button class="btn btn-danger" @click="addProduct">Thêm</button>
@@ -45,10 +59,15 @@
         :key="product.id"
       >
         <div class="card h-100">
-          <img :src="product.image_url" class="card-img-top" alt="Hình ảnh món ăn" />
+          <img
+            :src="product.image_url"
+            class="card-img-top"
+            alt="Hình ảnh món ăn"
+            style="height: 200px; object-fit: cover;"
+          />
           <div class="card-body">
             <!-- Nếu đang sửa món ăn này -->
-            <div v-if="editId === product.id">
+            <div v-if="editId === product.id && user">
               <input v-model="editProduct.name" class="form-control mb-2" />
               <textarea v-model="editProduct.description" class="form-control mb-2"></textarea>
               <select v-model="editProduct.region" class="form-select mb-2">
@@ -57,10 +76,12 @@
                 <option>Nam</option>
               </select>
               <input type="file" @change="handleEditFileChange" class="form-control mb-2" />
+
               <div v-if="editPreviewUrl" class="mb-2">
                 <p>Ảnh xem trước:</p>
-                <img :src="editPreviewUrl" class="img-thumbnail" style="max-height: 200px;" />
+                <img :src="editPreviewUrl" class="preview-img" />
               </div>
+
               <button class="btn btn-success btn-sm me-2" @click="saveEdit(product.id)">Lưu</button>
               <button class="btn btn-secondary btn-sm" @click="cancelEdit">Hủy</button>
             </div>
@@ -70,15 +91,18 @@
               <span class="badge bg-warning text-dark mb-2">Miền {{ product.region }}</span>
 
               <!-- Nút toggle xem cách làm -->
-              <button 
-                class="btn btn-sm btn-outline-secondary mb-2 me-2" 
+              <button
+                class="btn btn-sm btn-outline-secondary mb-2 me-2"
                 @click="toggleExpand(product.id)"
               >
                 {{ expandedIds.has(product.id) ? 'Ẩn cách làm' : 'Xem cách làm' }}
               </button>
 
-              <button class="btn btn-sm btn-primary me-2" @click="startEdit(product)">Sửa</button>
-              <button class="btn btn-sm btn-danger" @click="deleteProduct(product.id)">Xóa</button>
+              <!-- Nút sửa/xóa chỉ hiện khi đã đăng nhập -->
+              <template v-if="user">
+                <button class="btn btn-sm btn-primary me-2" @click="startEdit(product)">Sửa</button>
+                <button class="btn btn-sm btn-danger" @click="deleteProduct(product.id)">Xóa</button>
+              </template>
 
               <!-- Nội dung cách làm -->
               <transition name="fade">
@@ -95,6 +119,7 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue'
 import { supabase } from '@/supabase'
+import { useRouter } from 'vue-router'
 
 const products = ref([])
 const selectedRegion = ref('')
@@ -108,7 +133,6 @@ const previewUrl = ref(null)
 
 const expandedIds = ref(new Set())
 
-// Dành cho sửa món ăn
 const editId = ref(null)
 const editProduct = ref({
   name: '',
@@ -119,9 +143,12 @@ const editProduct = ref({
 })
 const editPreviewUrl = ref(null)
 
+// User đang đăng nhập
+const user = ref(null)
+const router = useRouter()
+
 const handleFileChange = (e) => {
   newProduct.value.imageFile = e.target.files[0]
-
   if (newProduct.value.imageFile) {
     previewUrl.value = URL.createObjectURL(newProduct.value.imageFile)
   } else {
@@ -139,19 +166,30 @@ const handleEditFileChange = (e) => {
 }
 
 const addProduct = async () => {
-  const file = newProduct.value.imageFile
-  if (!file) return alert('Vui lòng chọn hình ảnh.')
+  if (!user.value) {
+    alert('Vui lòng đăng nhập để thêm món ăn.')
+    router.push('/login')
+    return
+  }
 
+  if (!newProduct.value.imageFile) {
+    alert('Vui lòng chọn hình ảnh.')
+    return
+  }
+
+  const file = newProduct.value.imageFile
   const fileName = `${Date.now()}_${file.name}`
-  const { error: uploadError } = await supabase
-    .storage
+
+  const { error: uploadError } = await supabase.storage
     .from('product-images')
     .upload(fileName, file)
 
-  if (uploadError) return alert('Upload ảnh thất bại.')
+  if (uploadError) {
+    alert('Upload ảnh thất bại.')
+    return
+  }
 
-  const { data: publicUrlData } = supabase
-    .storage
+  const { data: publicUrlData } = supabase.storage
     .from('product-images')
     .getPublicUrl(fileName)
 
@@ -159,17 +197,21 @@ const addProduct = async () => {
 
   const { error } = await supabase
     .from('products')
-    .insert([{
-      name: newProduct.value.name,
-      description: newProduct.value.description,
-      region: newProduct.value.region,
-      image_url: publicUrl,
-    }])
+    .insert([
+      {
+        name: newProduct.value.name,
+        description: newProduct.value.description,
+        region: newProduct.value.region,
+        image_url: publicUrl,
+      },
+    ])
 
   if (!error) {
     fetchProducts()
     newProduct.value = { name: '', description: '', region: '', imageFile: null }
     previewUrl.value = null
+  } else {
+    alert('Thêm món ăn thất bại.')
   }
 }
 
@@ -182,7 +224,7 @@ const fetchProducts = async () => {
 
 const filteredProducts = computed(() => {
   if (!selectedRegion.value) return products.value
-  return products.value.filter(p => p.region === selectedRegion.value)
+  return products.value.filter((p) => p.region === selectedRegion.value)
 })
 
 const toggleExpand = (id) => {
@@ -195,6 +237,11 @@ const toggleExpand = (id) => {
 }
 
 const startEdit = (product) => {
+  if (!user.value) {
+    alert('Vui lòng đăng nhập để sửa món ăn.')
+    router.push('/login')
+    return
+  }
   editId.value = product.id
   editProduct.value = {
     name: product.name,
@@ -213,20 +260,28 @@ const cancelEdit = () => {
 }
 
 const saveEdit = async (id) => {
+  if (!user.value) {
+    alert('Vui lòng đăng nhập để sửa món ăn.')
+    router.push('/login')
+    return
+  }
+
   let imageUrl = editProduct.value.image_url
 
   if (editProduct.value.imageFile) {
     const file = editProduct.value.imageFile
     const fileName = `${Date.now()}_${file.name}`
-    const { error: uploadError } = await supabase
-      .storage
+
+    const { error: uploadError } = await supabase.storage
       .from('product-images')
       .upload(fileName, file)
 
-    if (uploadError) return alert('Upload ảnh thất bại.')
+    if (uploadError) {
+      alert('Upload ảnh thất bại.')
+      return
+    }
 
-    const { data: publicUrlData } = supabase
-      .storage
+    const { data: publicUrlData } = supabase.storage
       .from('product-images')
       .getPublicUrl(fileName)
 
@@ -246,38 +301,52 @@ const saveEdit = async (id) => {
   if (!error) {
     fetchProducts()
     cancelEdit()
+  } else {
+    alert('Cập nhật món ăn thất bại.')
   }
 }
 
 const deleteProduct = async (id) => {
-  if (!confirm('Bạn có chắc muốn xóa món ăn này?')) return
-
-  const { error } = await supabase
-    .from('products')
-    .delete()
-    .eq('id', id)
-
-  if (!error) {
-    fetchProducts()
+  if (!user.value) {
+    alert('Vui lòng đăng nhập để xóa món ăn.')
+    router.push('/login')
+    return
+  }
+  if (confirm('Bạn có chắc muốn xóa món ăn này?')) {
+    const { error } = await supabase.from('products').delete().eq('id', id)
+    if (!error) {
+      fetchProducts()
+    } else {
+      alert('Xóa món ăn thất bại.')
+    }
   }
 }
 
-onMounted(() => {
+onMounted(async () => {
+  const {
+    data: { user: currentUser },
+  } = await supabase.auth.getUser()
+  user.value = currentUser
+
   fetchProducts()
 })
 </script>
 
-
 <style scoped>
-img {
-  height: 200px;
+.preview-img {
+  max-height: 100px;
+  width: auto;
   object-fit: cover;
+  border-radius: 5px;
+  border: 1px solid #ddd;
 }
 
-.fade-enter-active, .fade-leave-active {
+.fade-enter-active,
+.fade-leave-active {
   transition: opacity 0.3s ease;
 }
-.fade-enter-from, .fade-leave-to {
+.fade-enter-from,
+.fade-leave-to {
   opacity: 0;
 }
 </style>
