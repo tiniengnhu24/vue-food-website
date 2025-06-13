@@ -4,22 +4,10 @@
       <h2 class="text-center mb-4">Đăng Nhập</h2>
       <form @submit.prevent="login">
         <div class="mb-3">
-          <input
-            type="email"
-            v-model="email"
-            class="form-control"
-            placeholder="Email"
-            required
-          />
+          <input type="email" v-model="email" class="form-control" placeholder="Email" required />
         </div>
         <div class="mb-3">
-          <input
-            type="password"
-            v-model="password"
-            class="form-control"
-            placeholder="Mật khẩu"
-            required
-          />
+          <input type="password" v-model="password" class="form-control" placeholder="Mật khẩu" required />
         </div>
         <button type="submit" class="btn btn-primary w-100">Đăng nhập</button>
       </form>
@@ -34,20 +22,16 @@
 <script setup>
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
-import { supabase } from '../supabase'
+import { supabase } from '@/supabase'
 
-// Biến reactive cho email và password
 const email = ref('')
 const password = ref('')
-
-// Router để điều hướng sau khi đăng nhập
 const router = useRouter()
 
-// Hàm đăng nhập
 const login = async () => {
   const { error } = await supabase.auth.signInWithPassword({
     email: email.value,
-    password: password.value
+    password: password.value,
   })
   if (error) {
     alert(error.message)
@@ -56,7 +40,6 @@ const login = async () => {
   }
 }
 </script>
-
 
 <style scoped>
 body {
