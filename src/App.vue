@@ -1,49 +1,35 @@
 <template>
-  <div id="app">
-    <!-- Top Banner full-width -->
+  <div id="app" class="container">
+    <!-- Top Banner hiển thị trên cùng -->
     <TopBanner />
 
-    <!-- Nội dung bên trong container -->
-    <div class="container py-3">
-      <!-- Thanh chức năng (Navbar) -->
-      <AppNavbar />
+    <!-- Thanh chức năng (Navbar) -->
+    <AppNavbar />
 
-      <!-- Nội dung trang -->
-      <router-view></router-view>
-    </div>
+    <!-- Nội dung trang -->
+    <router-view></router-view>
   </div>
 </template>
 
-<script>
-import AppNavbar from './components/Navbar.vue';
-import TopBanner from './components/TopBanner.vue';
+<script setup>
+import AppNavbar from './components/Navbar.vue'
+import TopBanner from './components/TopBanner.vue'
 
-export default {
-  name: 'App',
-  components: {
-    AppNavbar,
-    TopBanner
-  },
-  computed: {
-    isAuthPage() {
-      return this.$route.path === '/login' || this.$route.path === '/register';
-    }
-  }
-};
+// 💡 Import fetchUser từ useAuth để kiểm tra trạng thái đăng nhập
+import { onMounted } from 'vue'
+import { fetchUser } from '@/composables/useAuth'
+
+onMounted(() => {
+  fetchUser() // ✅ Gọi khi ứng dụng load
+})
 </script>
 
 <style>
 body {
   font-family: Arial, sans-serif;
   background-color: #fff;
-  color: #333;
+  color: #c00;
   margin: 0;
   padding: 0;
-}
-
-#app {
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
 }
 </style>

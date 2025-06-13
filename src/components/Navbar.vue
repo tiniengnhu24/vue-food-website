@@ -75,30 +75,20 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { supabase } from '@/supabase'
 
-// Khởi tạo router để điều hướng nếu cần
+// 👉 Lấy user từ useAuth thay vì tự tạo ref riêng
+import { user } from '@/composables/useAuth'
+
 const router = useRouter()
 
-// Reactive user object
-const user = ref(null)
-
-// Khi component mount, lấy user từ Supabase
-onMounted(async () => {
-  const { data } = await supabase.auth.getUser()
-  user.value = data.user
-})
-
-// Hàm đăng xuất
 const logout = async () => {
   await supabase.auth.signOut()
   user.value = null
-  router.push('/') // dùng router thay vì window.location.href
+  router.push('/')
 }
 </script>
-
 
 <style scoped>
 .navbar .badge {
